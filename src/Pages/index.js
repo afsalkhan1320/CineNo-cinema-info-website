@@ -1,0 +1,8 @@
+export {MovieList} from "./MovieList"
+export { MovieDetails} from "./MovieDetails"
+export {PageNotFound} from "./PageNotFound"
+export {Search} from "./Search"
+export {Home} from "./Home"
+export {MoviesSection} from "./MoviesSection"
+export {TvSection} from "./TvSection"
+export {AnimeSection} from "./AnimeSection"
