@@ -212,7 +212,7 @@ export const Header = () => {
 
         {/* Desktop Logo (visible on lg devices) */}
         <NavLink to="/" className="navbar-brand d-none d-lg-block ">
-          Cine <span className="header-title">No</span>{" "}
+          Cine<span className="header-title">No</span>{" "}
           <i className="bi bi-camera-reels header-icon fs-3"></i>
         </NavLink>
 
@@ -233,7 +233,7 @@ export const Header = () => {
 
           {/* Center: Website name */}
           <NavLink to="/" className="navbar-brand m-0">
-            Cine <span className="header-title">No</span>{" "}
+            Cine<span className="header-title">No</span>{" "}
             <i className="bi bi-camera-reels header-icon fs-4"></i>
           </NavLink>
 

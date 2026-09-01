@@ -9,7 +9,7 @@ export const AnimeSection = () => {
   useScrollRestoration();
 
   useEffect(() => {
-    document.title = "Cine No - Anime";
+    document.title = "CineNo - Anime";
   }, []);
 
   return (

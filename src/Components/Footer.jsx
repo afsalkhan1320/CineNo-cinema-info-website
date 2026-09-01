@@ -11,7 +11,7 @@ export const Footer = () => {
           <div className="col-lg-5 col-md-12 mb-4 mb-lg-0">
             <div className="footer-brand mb-3">
               <Link to="/" className="text-decoration-none fs-4 fw-bold text-light d-flex align-items-center gap-2">
-                 Cine <span className="header-title">No</span>
+                 Cine<span className="header-title">No</span>
                 <i className="bi bi-camera-reels header-icon"></i>
               </Link>
             </div>
@@ -63,7 +63,7 @@ export const Footer = () => {
 
         {/* Bottom Section */}
         <div className="footer-bottom mt-5 pt-4 border-top text-center text-secondary">
-          <p className="mb-0">&copy; {new Date().getFullYear()} Cine No. Designed with ❤️ for all cinema  lovers everywhere.</p>
+          <p className="mb-0">&copy; {new Date().getFullYear()} CineNo. Designed with ❤️ for all cinema  lovers everywhere.</p>
         </div>
       </div>
     </footer>

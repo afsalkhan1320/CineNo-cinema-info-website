@@ -10,7 +10,7 @@ export const Home = () => {
   useScrollRestoration();
 
   useEffect(() => {
-    document.title = "Cine No - Your Guide to Movies, TV Shows, Anime";
+    document.title = "CineNo - Your Guide to Movies, TV Shows, Anime";
   }, []);
 
   return (
@@ -27,7 +27,7 @@ export const Home = () => {
             <div className="hero-text">
               <h2>Welcome to</h2>
               <h1>
-                <span>Cine</span>{" "}
+                <span>Cine</span>
                 <strong>No</strong>
                 <i className="bi bi-camera-reels"></i>
               </h1>
