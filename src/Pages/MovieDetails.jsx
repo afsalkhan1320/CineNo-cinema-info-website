@@ -93,7 +93,7 @@ export const MovieDetails = ({ type }) => {
   // =====================================================
 
   const languageNames = {
-    eng: "English",
+    // Indian Languages
     tam: "Tamil",
     hin: "Hindi",
     tel: "Telugu",
@@ -103,25 +103,108 @@ export const MovieDetails = ({ type }) => {
     ben: "Bengali",
     pan: "Punjabi",
     guj: "Gujarati",
-    ara: "Arabic",
-    fra: "French",
-    deu: "German",
-    spa: "Spanish",
-    jpn: "Japanese",
+    urd: "Urdu",
+    ori: "Odia",
+    asm: "Assamese",
+    san: "Sanskrit",
+    // International Languages (3-letter)
+    eng: "English",
     kor: "Korean",
+    jpn: "Japanese",
     chi: "Chinese",
+    zho: "Chinese",
+    cmn: "Mandarin Chinese",
+    yue: "Cantonese",
+    spa: "Spanish",
+    fra: "French",
+    fre: "French",
+    deu: "German",
+    ger: "German",
+    ita: "Italian",
     por: "Portuguese",
     rus: "Russian",
-    ita: "Italian",
     tur: "Turkish",
     tha: "Thai",
     vie: "Vietnamese",
     ind: "Indonesian",
     pol: "Polish",
     nld: "Dutch",
+    dut: "Dutch",
     swe: "Swedish",
     dan: "Danish",
     nor: "Norwegian",
+    ces: "Czech",
+    cze: "Czech",
+    fil: "Filipino",
+    tgl: "Tagalog",
+    hun: "Hungarian",
+    fin: "Finnish",
+    ell: "Greek",
+    gre: "Greek",
+    heb: "Hebrew",
+    ron: "Romanian",
+    rum: "Romanian",
+    ukr: "Ukrainian",
+    msa: "Malay",
+    may: "Malay",
+    fas: "Persian",
+    per: "Persian",
+    ara: "Arabic",
+    kat: "Georgian",
+    geo: "Georgian",
+    slk: "Slovak",
+    slo: "Slovak",
+    bul: "Bulgarian",
+    hrv: "Croatian",
+    srp: "Serbian",
+    slv: "Slovenian",
+    lit: "Lithuanian",
+    lav: "Latvian",
+    est: "Estonian",
+    isl: "Icelandic",
+    cat: "Catalan",
+    eus: "Basque",
+    glg: "Galician",
+    // 2-letter ISO codes
+    ta: "Tamil",
+    hi: "Hindi",
+    te: "Telugu",
+    ml: "Malayalam",
+    kn: "Kannada",
+    mr: "Marathi",
+    bn: "Bengali",
+    pa: "Punjabi",
+    gu: "Gujarati",
+    ur: "Urdu",
+    en: "English",
+    ko: "Korean",
+    ja: "Japanese",
+    zh: "Chinese",
+    es: "Spanish",
+    fr: "French",
+    de: "German",
+    it: "Italian",
+    pt: "Portuguese",
+    ru: "Russian",
+    tr: "Turkish",
+    th: "Thai",
+    vi: "Vietnamese",
+    id: "Indonesian",
+    pl: "Polish",
+    nl: "Dutch",
+    sv: "Swedish",
+    da: "Danish",
+    no: "Norwegian",
+    cs: "Czech",
+    hu: "Hungarian",
+    fi: "Finnish",
+    el: "Greek",
+    he: "Hebrew",
+    ro: "Romanian",
+    uk: "Ukrainian",
+    ms: "Malay",
+    fa: "Persian",
+    ar: "Arabic",
   };
 
   const getLanguageName = (code) => {
@@ -131,12 +214,25 @@ export const MovieDetails = ({ type }) => {
       .toString()
       .toLowerCase()
       .split("-")[0]
-      .split("_")[0];
+      .split("_")[0]
+      .trim();
 
-    return (
-      languageNames[normalizedCode] ||
-      code.toString().toUpperCase()
-    );
+    if (languageNames[normalizedCode]) {
+      return languageNames[normalizedCode];
+    }
+
+    try {
+      if (typeof Intl !== "undefined" && Intl.DisplayNames) {
+        const displayName = new Intl.DisplayNames(["en"], { type: "language" }).of(normalizedCode);
+        if (displayName && displayName.toLowerCase() !== normalizedCode) {
+          return displayName;
+        }
+      }
+    } catch {
+      // Ignore fallback
+    }
+
+    return code.toString().toUpperCase();
   };
 
   // =====================================================
@@ -420,20 +516,28 @@ export const MovieDetails = ({ type }) => {
   // =====================================================
 
   const getAudioLanguages = (option) => {
-    if (!Array.isArray(option?.audios)) {
-      return [];
+    const list = [];
+    if (Array.isArray(option?.audios)) {
+      option.audios.forEach((audio) => {
+        const lang = typeof audio === "string"
+          ? audio
+          : (audio?.language || audio?.languageCode || audio?.code || audio?.locale?.language || audio?.locale?.languageCode);
+        if (lang) list.push(lang);
+      });
     }
-
-    return option.audios
-      .map((audio) => {
-        return (
-          audio?.language ||
-          audio?.languageCode ||
-          audio?.locale?.language ||
-          audio?.locale?.languageCode
-        );
-      })
-      .filter(Boolean);
+    if (Array.isArray(option?.audioLanguages)) {
+      option.audioLanguages.forEach((lang) => {
+        if (typeof lang === "string") list.push(lang);
+        else if (lang?.code || lang?.language) list.push(lang.code || lang.language);
+      });
+    }
+    if (Array.isArray(option?.audioTracks)) {
+      option.audioTracks.forEach((lang) => {
+        if (typeof lang === "string") list.push(lang);
+        else if (lang?.code || lang?.language) list.push(lang.code || lang.language);
+      });
+    }
+    return [...new Set(list)];
   };
 
   // =====================================================
@@ -468,6 +572,24 @@ export const MovieDetails = ({ type }) => {
     Object.entries(serviceLanguages).filter(
       ([, languages]) => languages.length > 0
     );
+
+  // Fallback / Detected OTT Providers from TMDB & Watchmode
+  const detectedOttProviders = [];
+  if (watchProviders?.flatrate?.length > 0) {
+    watchProviders.flatrate.forEach((p) => {
+      if (p.provider_name && !detectedOttProviders.includes(p.provider_name)) {
+        detectedOttProviders.push(p.provider_name);
+      }
+    });
+  }
+  if (watchmodeSources?.length > 0) {
+    watchmodeSources.forEach((s) => {
+      const name = s.name || s.source_name;
+      if (name && !detectedOttProviders.includes(name)) {
+        detectedOttProviders.push(name);
+      }
+    });
+  }
 
   // =====================================================
   // RENDER
@@ -986,115 +1108,115 @@ export const MovieDetails = ({ type }) => {
 
         {/* ERROR */}
 
-        {!streamingLoading && streamingError && (
-          <>
-            <p className="text-warning">
-              Unable to load OTT audio languages.
+        {!streamingLoading && streamingError && servicesWithLanguages.length === 0 && detectedOttProviders.length === 0 && (
+          <div>
+            <p className="text-warning mb-1">
+              Unable to fetch streaming language metadata from live provider API.
             </p>
-
             <small className="text-secondary">
               {streamingError}
             </small>
-          </>
+          </div>
         )}
 
-        {/* NO DATA */}
+        {/* AUDIO LANGUAGES AVAILABLE */}
 
-        {!streamingLoading &&
-          !streamingError &&
-          streamingOptions.length === 0 && (
-            <div>
+        {!streamingLoading && servicesWithLanguages.length > 0 && (
+          <div>
+            <p className="text-secondary mb-4">
+              Audio languages available on streaming services in India:
+            </p>
 
-              <p className="text-secondary">
-                No OTT streaming information found
-                for India.
-              </p>
-
-              <small className="text-secondary">
-                The title may not have streaming
-                availability or audio-language
-                metadata in the API.
-              </small>
-
-            </div>
-          )}
-
-        {/* STREAMING OPTIONS EXIST BUT NO AUDIO */}
-
-        {!streamingLoading &&
-          !streamingError &&
-          streamingOptions.length > 0 &&
-          servicesWithLanguages.length === 0 && (
-            <div>
-
-              <p className="text-secondary">
-                Streaming service found, but audio
-                language information was not returned
-                by the API.
-              </p>
-
-              <small className="text-secondary">
-                This does not necessarily mean that
-                Tamil, Hindi, Telugu, or other dubbed
-                audio is unavailable on the OTT app.
-              </small>
-
-            </div>
-          )}
-
-        {/* AUDIO LANGUAGES */}
-
-        {!streamingLoading &&
-          !streamingError &&
-          servicesWithLanguages.length > 0 && (
-            <div>
-
-              <p className="text-secondary mb-4">
-                Audio languages available on
-                streaming services in India.
-              </p>
-
-              {servicesWithLanguages.map(
-                ([serviceName, languages]) => (
-                  <div
-                    className="audio-language-card mb-3"
-                    key={serviceName}
-                  >
-
-                    <div className="audio-service-header">
-
-                      <h5>
-                        {serviceName}
-                      </h5>
-
-                      <span className="audio-type">
-                        India
-                      </span>
-
-                    </div>
-
-                    <div className="d-flex flex-wrap gap-2">
-
-                      {languages.map(
-                        (languageCode) => (
-                          <span
-                            key={languageCode}
-                            className="audio-language-badge"
-                          >
-                            🎧{" "}
-                            {getLanguageName(
-                              languageCode
-                            )}
-                          </span>
-                        )
-                      )}
-
-                    </div>
-
+            {servicesWithLanguages.map(
+              ([serviceName, languages]) => (
+                <div
+                  className="audio-language-card mb-3"
+                  key={serviceName}
+                >
+                  <div className="audio-service-header">
+                    <h5>
+                      {serviceName}
+                    </h5>
+                    <span className="audio-type">
+                      India
+                    </span>
                   </div>
-                )
-              )}
 
+                  <div className="d-flex flex-wrap gap-2">
+                    {languages.map(
+                      (languageCode) => (
+                        <span
+                          key={languageCode}
+                          className="audio-language-badge"
+                        >
+                          🎧{" "}
+                          {getLanguageName(
+                            languageCode
+                          )}
+                        </span>
+                      )
+                    )}
+                  </div>
+                </div>
+              )
+            )}
+          </div>
+        )}
+
+        {/* FALLBACK: STREAMING SERVICES DETECTED BUT LIVE AUDIO API HAS NO DETAILED TRACKS */}
+        {!streamingLoading && servicesWithLanguages.length === 0 && detectedOttProviders.length > 0 && (
+          <div>
+            <p className="text-secondary mb-3">
+              Confirmed streaming platform(s) available for India:
+            </p>
+
+            {detectedOttProviders.map((serviceName) => (
+              <div
+                className="audio-language-card mb-3"
+                key={serviceName}
+              >
+                <div className="audio-service-header">
+                  <h5>{serviceName}</h5>
+                  <span className="audio-type">India • Streaming</span>
+                </div>
+
+                <div className="d-flex flex-wrap gap-2 mb-2">
+                  {movie.spoken_languages?.length > 0 ? (
+                    movie.spoken_languages.map((lang) => (
+                      <span
+                        key={lang.iso_639_1}
+                        className="audio-language-badge"
+                      >
+                        🎧 {lang.english_name} (Original)
+                      </span>
+                    ))
+                  ) : (
+                    <span className="audio-language-badge">
+                      🎧 {getLanguageName(movie.original_language || "en")}
+                    </span>
+                  )}
+                </div>
+
+                <small className="text-secondary d-block mt-2">
+                  💡 Additional audio dubs (such as Tamil, Telugu, Hindi, or English) may also be available directly within the {serviceName} app.
+                </small>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* NO STREAMING SERVICES FOUND AT ALL */}
+        {!streamingLoading &&
+          !streamingError &&
+          servicesWithLanguages.length === 0 &&
+          detectedOttProviders.length === 0 && (
+            <div>
+              <p className="text-secondary">
+                No OTT streaming information found for India.
+              </p>
+              <small className="text-secondary">
+                The title may not have streaming availability or audio-language metadata in the API currently.
+              </small>
             </div>
           )}
 

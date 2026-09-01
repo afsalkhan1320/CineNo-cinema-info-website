@@ -7,7 +7,7 @@ export const useStreamingAvailability = (type, id) => {
   const apiKey = import.meta.env.VITE_STREAMING_API_KEY;
 
   useEffect(() => {
-    const fetchStreamingAvailability = async () => {S
+    const fetchStreamingAvailability = async () => {
       // Check API key
       if (!apiKey) {
         setError("Streaming API key is missing.");
@@ -64,17 +64,22 @@ export const useStreamingAvailability = (type, id) => {
         console.log("FULL STREAMING API RESPONSE:");
         console.log(data);
 
-        /*
-          Get India streaming options
-        */
+        let options = data.streamingOptions?.in || [];
 
-        const indiaOptions =
-          data.streamingOptions?.in || [];
+        // If India-specific options aren't available, check if other country options or array exist
+        if (!options || options.length === 0) {
+          if (Array.isArray(data.streamingOptions)) {
+            options = data.streamingOptions;
+          } else if (data.streamingOptions && typeof data.streamingOptions === "object") {
+            const countryKeys = Object.keys(data.streamingOptions);
+            if (countryKeys.length > 0) {
+              options = data.streamingOptions[countryKeys[0]] || [];
+            }
+          }
+        }
 
-        console.log("INDIA STREAMING OPTIONS:");
-        console.log(indiaOptions);
-
-        setStreamingOptions(indiaOptions);
+        console.log("STREAMING OPTIONS RESOLVED:", options);
+        setStreamingOptions(options);
       } catch (err) {
         console.error(
           "STREAMING AVAILABILITY ERROR:",

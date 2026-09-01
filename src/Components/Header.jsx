@@ -208,7 +208,7 @@ export const Header = () => {
 
   return (
     <nav className="navbar navbar-expand-lg fixed-top navbar-dark pt-2 pb-3 flex-column">
-      <div className="container-fluid">
+      <div className="container-fluid px-3 px-lg-4">
 
         {/* Desktop Logo (visible on lg devices) */}
         <NavLink to="/" className="navbar-brand d-none d-lg-block ">
