@@ -370,7 +370,7 @@ export const MovieDetails = ({ type }) => {
     document.title =
       displayTitle !== "Unknown Title"
         ? displayTitle
-        : "Cineko";
+        : "Cine No";
   }, [displayTitle]);
 
   // =====================================================

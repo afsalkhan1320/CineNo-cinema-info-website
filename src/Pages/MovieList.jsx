@@ -190,8 +190,8 @@ export const MovieList = ({
                 <h2>Welcome to</h2>
 
                 <h1>
-                  <span>Cine</span>
-                  <strong>ko</strong>
+                  <span>Cine</span>{" "}
+                  <strong>No</strong>
                   <i className="bi bi-camera-reels"></i>
                 </h1>
 

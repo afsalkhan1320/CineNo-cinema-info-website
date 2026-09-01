@@ -7,7 +7,7 @@ export const TvSection = () => {
   useScrollRestoration();
 
   useEffect(() => {
-    document.title = "Cineko - TV Shows";
+    document.title = "Cine No - TV Shows";
   }, []);
 
   return (

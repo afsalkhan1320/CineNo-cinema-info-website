@@ -93,7 +93,7 @@ export const Card = ({ movie }) => {
                 </h5>
 
                 <span>
-                  Cineko
+                  Cine No
                 </span>
 
               </div>
